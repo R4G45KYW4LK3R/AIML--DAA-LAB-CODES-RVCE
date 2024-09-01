@@ -1,0 +1,60 @@
+//6A
+#include <stdio.h>
+
+#define INFINITY 999
+
+void dijkstra(int n, int cost[n][n], int source, int visited[n], int distance[n]) {
+    visited[source] = 1;
+    int min_dist, next_node;
+    for (int count = 1; count < n; count++) {
+        min_dist = INFINITY;
+        for (int i = 0; i < n; i++) 
+            if (!visited[i] && distance[i] < min_dist) {
+                min_dist = distance[i];
+                next_node = i;
+            }
+        visited[next_node] = 1;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && (min_dist + cost[next_node][i] < distance[i]))
+                distance[i] = min_dist + cost[next_node][i];
+        }
+    }
+}
+
+
+int main(void) {
+    int n;
+    printf("number of nodes: ");
+    scanf("%d", &n);
+
+    int cost[6][6] = {
+        {0, 2, INFINITY, 8, INFINITY, INFINITY},
+        {2, 0, INFINITY, 5, 6, INFINITY},
+        {INFINITY, INFINITY, 0, INFINITY, 9, 3},
+        {8, 5, INFINITY, 0, INFINITY, 2},
+        {INFINITY, 6, 9, INFINITY, 0, INFINITY},
+        {INFINITY, INFINITY, 3, 2, INFINITY, 0}
+    };
+    // printf("cost matrix: ");
+    // for (int i = 0; i < n; i++)
+    //     for (int j = 0; j < n; j++)
+    //         scanf("%d", &cost[i][j]);
+    
+    int source;
+    printf("source: ");
+    scanf("%d", &source);
+
+    int visited[n], distance[n];
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;
+        distance[i] = cost[source][i];
+    }
+
+    dijkstra(n, cost, source, visited, distance);
+    printf("Shortest distance from source %d:\n", source);
+    for (int i = 0; i < n; i++)
+        printf("%d --> %d = %d\n", source, i, distance[i]);
+
+    return 0;
+
+}

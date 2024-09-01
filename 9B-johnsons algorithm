@@ -1,0 +1,108 @@
+//9B-1
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_VERTICES 100
+#define INF INT_MAX
+
+struct Edge {
+    int src, dest, weight;
+};
+
+void BellmanFord(int graph[][3], int numVertices, int numEdges, int src, int dist[]) {
+    for (int i = 0; i < numVertices; i++)
+        dist[i] = INF;
+    dist[src] = 0;
+    for (int i = 0; i < numVertices - 1; i++) {
+        for (int j = 0; j < numEdges; j++) {
+            int u = graph[j][0];
+            int v = graph[j][1];
+            int weight = graph[j][2];
+            if (dist[u] != INF && dist[u] + weight < dist[v])
+                dist[v] = dist[u] + weight;
+        }
+    }
+}
+
+void Dijkstra(int graph[MAX_VERTICES][MAX_VERTICES], int src, int dist[], int numVertices) {
+    int minDistance(int dist[], int sptSet[], int numVertices);
+    int sptSet[MAX_VERTICES];
+    for (int i = 0; i < numVertices; i++)
+        dist[i] = INF, sptSet[i] = 0;
+    dist[src] = 0;
+    for (int count = 0; count < numVertices - 1; count++) {
+        int u = minDistance(dist, sptSet, numVertices);
+        sptSet[u] = 1;
+        for (int v = 0; v < numVertices; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INF && dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
+    }
+}
+
+int minDistance(int dist[], int sptSet[], int numVertices) {
+    int min = INF, min_index;
+    for (int v = 0; v < numVertices; v++)
+        if (sptSet[v] == 0 && dist[v] <= min)
+            min = dist[v], min_index = v;
+    return min_index;
+}
+
+void johnson(int graph[MAX_VERTICES][MAX_VERTICES], int numVertices) {
+    int newGraph[MAX_VERTICES + 1][3];
+    int dist[MAX_VERTICES + 1], newDist[MAX_VERTICES][MAX_VERTICES], h[MAX_VERTICES];
+    int E = 0;
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            if (graph[i][j] != 0) {
+                newGraph[E][0] = i;
+                newGraph[E][1] = j;
+                newGraph[E][2] = graph[i][j];
+                E++;
+            }
+        }
+    }
+    for (int i = 0; i < numVertices; i++) {
+        newGraph[E][0] = numVertices;
+        newGraph[E][1] = i;
+        newGraph[E][2] = 0;
+    }
+    BellmanFord(newGraph, numVertices + 1, E, numVertices, dist);
+    for (int i = 0; i < numVertices; i++)
+        h[i] = dist[i];
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            if (graph[i][j])
+                graph[i][j] += h[i] - h[j];
+        }
+    }
+    for (int i = 0; i < numVertices; i++) {
+        Dijkstra(graph, i, dist, numVertices);
+        for (int j = 0; j < numVertices; j++)
+            newDist[i][j] = dist[j] + h[j] - h[i];
+    }
+    printf("All-pairs shortest path matrix:\n");
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            if (newDist[i][j] == INF)
+                printf("INF ");
+            else
+                printf("%d ", newDist[i][j]);
+        }
+        printf("\n");
+    }
+    printf("Time Complexity: O(VE + V^2 log V)\n");
+}
+
+int main() {
+    int numVertices, graph[MAX_VERTICES][MAX_VERTICES];
+    printf("Enter the number of vertices: ");
+    scanf("%d", &numVertices);
+    printf("Enter the adjacency matrix:\n");
+    for (int i = 0; i < numVertices; i++)
+        for (int j = 0; j < numVertices; j++)
+            scanf("%d", &graph[i][j]);
+    johnson(graph, numVertices);
+    return 0;
+}

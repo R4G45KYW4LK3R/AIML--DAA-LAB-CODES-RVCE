@@ -1,0 +1,43 @@
+//5A
+
+#include <stdio.h>
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int knapSack(int cap, int wt[], int val[], int n) {
+    int dp[n + 1][cap + 1];
+    for (int i = 0; i <= n; i++) {
+        for (int w = 0; w <= cap; w++) {
+            if (i == 0 || w == 0) 
+                dp[i][w] = 0; // Base case: no item or no capacity
+            else if (wt[i - 1] <= w) 
+                dp[i][w] = max(dp[i - 1][w], val[i - 1] + dp[i - 1][w - wt[i - 1]]);
+            else 
+                dp[i][w] = dp[i - 1][w]; // If the weight of the item is more than current capacity
+        }
+    }
+    return dp[n][cap];
+}
+
+int main(void) {
+    int cap,n, val[20],wt[20];
+    
+    printf("Enter capacity");
+    scanf("%d",&cap);
+    printf("Enter no. of elements");
+    scanf("%d",&n);
+    printf("Enter values");
+    for(int i=0;i<n;i++){
+        scanf("%d",&val[i]);
+    }
+    printf("Enter weights");
+    for(int i=0;i<n;i++){
+        scanf("%d",&wt[i]);
+    }
+    
+    
+    printf("Maximum value in Knapsack = %d\n", knapSack(cap, wt, val, n));
+    return 0;
+}

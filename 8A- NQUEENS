@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+int *x; // Global array to store the positions of the queens
+int solution_count = 0;
+
+// Function to check if a queen can be placed in the kth row and ith column
+bool Place(int k, int i) {
+    for (int j = 1; j < k; j++) {
+        if (x[j] == i || abs(x[j] - i) == abs(j - k)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Function to print the chessboard
+void printChessboard(int n) {
+    solution_count++;
+    printf("Solution #%d:\n", solution_count);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (x[i] == j) {
+                printf(" Q ");
+            } else {
+                printf(" . ");
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Recursive function to solve the N-Queens problem
+void NQueens(int k, int n) {
+    for (int i = 1; i <= n; i++) {
+        if (Place(k, i)) {
+            x[k] = i;
+            if (k == n) {
+                printChessboard(n);
+            } else {
+                NQueens(k + 1, n);
+            }
+        }
+    }
+}
+
+int main() {
+    int n;
+
+    // Input the value of n
+    printf("Enter the value of n (size of the chessboard): ");
+    scanf("%d", &n);
+
+    // Allocate memory for the global array x
+    x = (int *)malloc((n + 1) * sizeof(int));
+
+    // Start solving the N-Queens problem
+    NQueens(1, n);
+
+    // Print total number of solutions found
+    printf("Total number of solutions: %d\n", solution_count);
+
+    // Free allocated memory
+    free(x);
+
+    return 0;
+}
+

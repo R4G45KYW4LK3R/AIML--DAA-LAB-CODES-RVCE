@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+void findSubset(int set[], int subset[], int n, int idx, int sum, int target, int *count) {
+    if (sum == target) {
+        (*count)++;
+        printf("Solution %d: {", *count);
+        for (int i = 0; i < idx; i++) {
+            printf("%d, ", subset[i]);
+        }
+        printf("\b\b}\n");
+        return;
+    }
+
+    if (sum > target || idx == n) {
+        return;
+    }
+
+    for (int i = idx; i < n; i++) {
+        subset[idx] = set[i];
+        findSubset(set, subset, n, i + 1, sum + set[i], target, count);
+    }
+}
+
+void subsetSum(int set[], int n, int target) {
+    int subset[n];
+    int count = 0;
+    findSubset(set, subset, n, 0, 0, target, &count);
+    if (count == 0) {
+        printf("No solution found.\n");
+    }
+}
+
+int main() {
+    int set[] = {1, 2, 5, 6, 7};
+    int n = sizeof(set) / sizeof(set[0]);
+    int target = 9;
+    subsetSum(set, n, target);
+    return 0;
+}
